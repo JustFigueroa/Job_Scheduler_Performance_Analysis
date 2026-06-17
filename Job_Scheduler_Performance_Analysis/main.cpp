@@ -10,10 +10,11 @@
 #include <iostream>
 #include <vector>
 #include <fstream>
+#include <chrono>
 using namespace std;
 
 //randomJobGenrator generates a job.txt file with random job info as required by project specifications.
-void randomJobGenerator();
+void randomJobGenerator(int numOfJobs);
 //getJobFile will load the job.txt file to be parsed by jobTimes function.
 ifstream getJobFile();
 //parseJobFile will parse input file jobList to return a vector with job times.
@@ -27,13 +28,32 @@ void ShortestJobFirst(vector<int>& jobTimes);
 
 
 int main(int argc, const char * argv[]) {
-    randomJobGenerator();
+    int numOfJobs = 5;
+    randomJobGenerator(numOfJobs);
     ifstream jobList = getJobFile();
     
 }
 
-void randomJobGenerator(){
+void randomJobGenerator(int numOfJobs){
     
+    stringstream ss;
+    int seed = chrono::high_resolution_clock::now().time_since_epoch().count();
+    srand(seed);
+    
+    for (int i = 1; i <= numOfJobs; i ++){
+        int burst = rand() % 100 + 1;
+        ss << "Job " << i << "\n";
+        ss << burst << "\n";
+    }
+    cout << ss.str();
+    ofstream OutFile("job.txt");
+    OutFile << ss.str();
+}
+
+ifstream getJobFile(){
+    ifstream file;
+    
+    return file;
 }
 
 vector<int> parseJobFile(ifstream& jobList){
