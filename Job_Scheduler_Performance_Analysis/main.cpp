@@ -11,12 +11,13 @@
 #include <vector>
 #include <fstream>
 #include <chrono>
+#include <filesystem>
 using namespace std;
 
 //randomJobGenrator generates a job.txt file with random job info as required by project specifications.
 void randomJobGenerator(int numOfJobs);
 //getJobFile will load the job.txt file to be parsed by jobTimes function.
-ifstream getJobFile();
+ifstream getJobFile(const char * argv[]);
 //parseJobFile will parse input file jobList to return a vector with job times.
 vector<int> parseJobFile(ifstream& jobList);
 //The four algorthms to be analyzed: RR (Times Slices 2 and 5 minutes), FCFS, SJF.
@@ -28,14 +29,17 @@ void ShortestJobFirst(vector<int>& jobTimes);
 
 
 int main(int argc, const char * argv[]) {
-    int numOfJobs = 5;
-    randomJobGenerator(numOfJobs);
-    ifstream jobList = getJobFile();
-    
+    for (int i = 0; i % 5 == 0; i++){
+        if (i >= 30){
+            break;
+        }
+        randomJobGenerator(i);
+        ifstream jobList = getJobFile(argv);
+    }
 }
 
+//randomJobGenrator generates a job.txt file with random job info as required by project specifications.
 void randomJobGenerator(int numOfJobs){
-    
     stringstream ss;
     int seed = chrono::high_resolution_clock::now().time_since_epoch().count();
     srand(seed);
@@ -50,12 +54,18 @@ void randomJobGenerator(int numOfJobs){
     OutFile << ss.str();
 }
 
-ifstream getJobFile(){
+//getJobFile will load the job.txt file to be parsed by jobTimes function.
+ifstream getJobFile(const char * argv[]){
     ifstream file;
+    filesystem::path exePath = std::filesystem::absolute(argv[0]);
+    filesystem::path exeDir = exePath.parent_path();
+    ifstream file_in(exeDir);
+    if (!file_in) { cerr <<"File not found";}
     
     return file;
 }
 
+//parseJobFile will parse input file jobList to return a vector with job times.
 vector<int> parseJobFile(ifstream& jobList){
     vector<int> jobTimes;
     
