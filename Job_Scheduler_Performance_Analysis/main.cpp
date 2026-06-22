@@ -29,12 +29,14 @@ void ShortestJobFirst(vector<int>& jobTimes);
 
 
 int main(int argc, const char * argv[]) {
-    for (int i = 0; i % 5 == 0; i++){
-        if (i >= 30){
-            break;
+    for (int i = 5; i <= 30; i++){
+        if (i % 5 == 0){
+            randomJobGenerator(i);
+            ifstream jobList = getJobFile(argv);
+            vector<int> jobTimes = parseJobFile(jobList);
         }
-        randomJobGenerator(i);
-        ifstream jobList = getJobFile(argv);
+        else{
+        }
     }
 }
 
@@ -49,26 +51,36 @@ void randomJobGenerator(int numOfJobs){
         ss << "Job " << i << "\n";
         ss << burst << "\n";
     }
-    cout << ss.str();
     ofstream OutFile("job.txt");
     OutFile << ss.str();
 }
 
 //getJobFile will load the job.txt file to be parsed by jobTimes function.
 ifstream getJobFile(const char * argv[]){
-    ifstream file;
     filesystem::path exePath = std::filesystem::absolute(argv[0]);
     filesystem::path exeDir = exePath.parent_path();
-    ifstream file_in(exeDir);
-    if (!file_in) { cerr <<"File not found";}
+    filesystem::path jobPath = exeDir / "job.txt";
+    ifstream inFile(jobPath);
+    if (!inFile) { cerr <<"File not found";}
     
-    return file;
+    return inFile;
 }
 
 //parseJobFile will parse input file jobList to return a vector with job times.
 vector<int> parseJobFile(ifstream& jobList){
     vector<int> jobTimes;
-    
+    string line;
+    int x;
+    if (!jobList.is_open()){
+        cout << "File not found";
+    }
+    while (getline(jobList, line)){
+        istringstream ss(line);
+        
+        if (ss >> x){
+            jobTimes.push_back(x);
+        }
+    }
     return jobTimes;
 }
 
